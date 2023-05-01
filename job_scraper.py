@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import json
 
-def get_jobs_posts_indeed(job_title='Software Engineer', job_location= 'Reston, VA', url=''):
+def get_jobs_posts_indeed(job_title='Software Engineer', job_location= 'Reston, VA', url='', count = 3):
     def is_not_blank(s):
         return bool(s and not s.isspace())
 
@@ -34,7 +34,7 @@ def get_jobs_posts_indeed(job_title='Software Engineer', job_location= 'Reston, 
 
     job_listings = driver.find_elements(By.TAG_NAME, 'tbody')
     jobs = []
-    count = 0
+    counter = 0
 
     for i in job_listings:
         if is_not_blank(i.text):
@@ -51,16 +51,16 @@ def get_jobs_posts_indeed(job_title='Software Engineer', job_location= 'Reston, 
                     'url': url,
                     'description': description
                 })
-                count += 1
+                counter += 1
             except:
                 pass
             
-            if count == 1:
+            if counter == count:
                 break
 
     driver.close()
 
-    return jobs[:1]
+    return jobs
 
 
 
