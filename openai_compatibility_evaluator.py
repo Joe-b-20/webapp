@@ -15,6 +15,46 @@ def get_respond_from_openai(message):
         presence_penalty = 0
     )
     return completion.choices[0].text.strip()
+
+def slice_text(text, start_word, end_word):
+  start_index = text.find(start_word) + len(start_word)
+  if end_word is None:
+    end_index = len(text)
+  else:
+    end_index = text.find(end_word)
+  return text[start_index:end_index]
+
+def find_int(string):
+  number = ""
+  for char in string:
+    if char.isdigit():
+      number += char
+  return int(number)
+
+def break_down_openai_output(output,file_name):
+   # write_to_text_file("file_name", f"raw_{output}")
+    
+    f = "\n"+ "_"*80+ "\n"
+    
+    compatibility_rating = (slice_text(output, "Compatibility rating = ", "Compatibility summary"))
+    compatibility_rating_int = (find_int(compatibility_rating))
+    compatibility_rating_str = (str(compatibility_rating) + f)
+    compatibility_rating_str = (f + f"\nCompatibility rating = {compatibility_rating_str}")
+    
+    compatibility_summary_r = (slice_text(output, "Compatibility summary = ", "Suggestions for the resume"))
+    compatibility_summary = (f"\nCompatibility summary:\n\n{compatibility_summary_r}" + f)
+
+    resume_suggestions_r = (slice_text(output, "Suggestions for the resume = ", "Follow-up email"))
+    resume_suggestions = (f"\nResume Suggestions:\n\n{resume_suggestions_r}" + f)
+    
+    followup_email_r = (slice_text(output, "Follow-up email = ", None))
+    followup_email = (f"\nFollow-up email:\n\n{followup_email_r}" + f+f)
+    
+    final  = (compatibility_rating_str + compatibility_summary + resume_suggestions + followup_email)
+
+   # write_to_text_file(file_name, final)
+    
+    return compatibility_rating_int , compatibility_summary_r , resume_suggestions_r , followup_email_r
     
 def get_compatibility(resume, description):
     message = f"Please rate the compatibility between the following resume and job description on a scale of 0-100, provide a summary of the compatibility rating, provide suggestions for resume to best fit the job description, and provide a follow-up email to the employer.\n \
@@ -29,14 +69,10 @@ def get_compatibility(resume, description):
                 
     respond = get_respond_from_openai(message)
     sections = respond.split("\n\n\n")
-    if len(sections) < 4:
-        raise ValueError(f"Expected at least 4 sections in output, but found {len(sections)}:\n\n{respond}")
-    return {
-        'rating': sections[0].split("=")[1].strip(),
-        'summary': sections[1].split("=")[1].strip(),
-        'suggestions': sections[2].split("=")[1].strip(),
-        'followup_email': sections[3].split("=")[1].strip()
-    }
+   # if len(sections) < 4:
+        #raise ValueError(f"Expected at least 4 sections in output, but found {len(sections)}:\n\n{respond}")
+    return break_down_openai_output(respond,"file_name")
+
 
 def evaluate_job_compatibility(resume,text):
          
@@ -64,5 +100,3 @@ def test_get_compatibility():
     assert 0 <= int(compatibility['rating']) <= 100, 'Compatibility rating is not a valid number between 0 and 100'
 if __name__ == '__main__':
     test_get_compatibility()
-
-
