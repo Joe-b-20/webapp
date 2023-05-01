@@ -4,12 +4,12 @@ from selenium.webdriver.common.keys import Keys
 import time
 import json
 
-def get_jobs_posts_indeed(job_title={'name': 'Software Engineer'}, job_location={'name': 'Reston, VA'}, url=''):
+def get_jobs_posts_indeed(job_title='Software Engineer', job_location= 'Reston, VA', url=''):
     def is_not_blank(s):
         return bool(s and not s.isspace())
 
-    stitle = job_title.get('name', '')
-    slocation = job_location.get('name', '')
+    stitle = job_title
+    slocation = job_location
 
     if not url:
         driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver')
