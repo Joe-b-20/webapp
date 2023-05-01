@@ -5,27 +5,24 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 
-def get_jobs_posts_indeed(title='Software Engineer', location='Reston, VA', url=''):
-
+def get_jobs_posts_indeed(job_title={'name': 'Software Engineer'}, job_location={'name': 'Reston, VA'}, url=''):
     def is_not_blank(s):
-        if isinstance(s, str):
-            return bool(s and not s.isspace())
-        elif isinstance(s, dict):
-            return bool(s.get('name') and not s.get('name').isspace())
-        else:
-            return False
+        return bool(s and not s.isspace())
+
+    stitle = job_title.get('name', '')
+    slocation = job_location.get('name', '')
 
     if not url:
         driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver')
         driver.get('https://www.indeed.com/')
 
-        if is_not_blank(title):
+        if is_not_blank(stitle):
             job_title_input = driver.find_element(By.NAME, 'q')
-            job_title_input.send_keys(title)
+            job_title_input.send_keys(stitle)
 
         location_input = driver.find_element(By.ID, 'text-input-where')
         location_input.send_keys(Keys.CONTROL + 'a' + Keys.DELETE)
-        location_input.send_keys(location)
+        location_input.send_keys(slocation)
 
         location_input.send_keys(Keys.ENTER)
 
