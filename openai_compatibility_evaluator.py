@@ -1,6 +1,6 @@
 import openai
 
-openai.api_key = ("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")
+openai.api_key = ("")
 
 def get_respond_from_openai(message):
     completion = openai.Completion.create(
